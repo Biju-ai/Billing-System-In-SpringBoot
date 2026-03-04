@@ -1,0 +1,32 @@
+
+
+spring:
+  application:
+    name: Billing-System
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/billing_system
+    username: root
+    password: 7766
+#    driver-class-name: com.mysql.cj.jdbc.Driver  # <-- ADD THIS
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  liquibase:
+    change-log: classpath:changelog/change_log_master.yaml
+    enabled: true
+
+
+  mail:
+      host: smtp.gmail.com
+      port: 587
+      username: shresthabiju6@gmail.com
+      password: lkoh wxqq rqrj ysof
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
