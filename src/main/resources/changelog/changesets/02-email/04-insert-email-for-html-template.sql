@@ -57,4 +57,44 @@ INSERT INTO html_templates(
 </html>
 ',
          'cashier_template'
-        );
+        ),
+        (
+         '<!DOCTYPE html>
+         <html lang="en">
+         <head>
+             <meta charset="UTF-8">
+             <title>Supplier Notification</title>
+         </head>
+         <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f6f8;">
+             <div style="width: 100%; padding: 40px 0; display: flex; justify-content: center;">
+
+                 <div style="max-width: 500px; width: 90%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px;">
+
+                     <h1 style="color: #1a73e8; font-size: 26px; text-align: center; margin-bottom: 30px;">
+                         Supplier Notification
+                     </h1>
+
+                     <p style="color: #333333; font-size: 18px; margin-bottom: 20px;">
+                         Hello <strong>${supplierName}</strong>,
+                     </p>
+
+                     <div style="background-color: #f1f5fb; border: 1px solid #d1e3ff; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                         <p style="margin: 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                             ${remarks}
+                         </p>
+                     </div>
+
+                     <p style="color: #444444; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                         Please contact us to send the product.
+                     </p>
+
+                     <p style="color: #1a73e8; font-weight: bold; font-size: 16px; margin: 0;">
+                         Thank You
+                     </p>
+
+                 </div>
+
+             </div>
+         </body>
+         </html>',
+         'SUPPLIER_EMAIL_LOG');

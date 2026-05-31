@@ -21,10 +21,12 @@ import inventroy.Billing.system.Billing.System.util.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -45,15 +47,16 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final RolesRepo rolesRepo;
     private final CustomerEmailLogo customerEmailLogo;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public UserServiceImpl(Mail mail, UserRepo userRepo, JwtService jwtService, AuthenticationManager authenticationManager, RolesRepo rolesRepo, CustomerEmailLogo customerEmailLogo) {
+    public UserServiceImpl(Mail mail, UserRepo userRepo, JwtService jwtService, AuthenticationManager authenticationManager, RolesRepo rolesRepo, CustomerEmailLogo customerEmailLogo,PasswordEncoder passwordEncoder) {
         this.mail = mail;
         this.userRepo = userRepo;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.rolesRepo = rolesRepo;
         this.customerEmailLogo = customerEmailLogo;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -77,7 +80,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstname(userRequest.getFirstname());
         user.setLastname(userRequest.getLastname());
         user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setDateofbirth(userRequest.getDateofbirth());
         user.setPhonenumber(userRequest.getPhonenumber());
         user.setGender(userRequest.getGender());
@@ -160,14 +163,44 @@ public class UserServiceImpl implements UserService {
     }
 
     public RequestApi<?> login(UserLogin userLogin) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getEmail(), userLogin.getPassword()));
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(userDetails);
 
-        LoginRespon loginRespon = new LoginRespon();
-        loginRespon.setToken(token);
-        loginRespon.setRole(jwtService.extractRole(token));
-        return ResponceApi.success(1, "User logged in successfully", loginRespon);
+        try {
+
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    userLogin.getEmail(),
+                                    userLogin.getPassword()
+                            )
+                    );
+
+            System.out.println("Inside me 1");
+
+            UserDetails userDetails =
+                    (UserDetails) authentication.getPrincipal();
+
+            System.out.println("after user detials");
+
+            String token = jwtService.generateToken(userDetails);
+
+            LoginRespon loginResponse = new LoginRespon();
+            loginResponse.setToken(token);
+            loginResponse.setRole(jwtService.extractRole(token));
+
+            return ResponceApi.success(
+                    1,
+                    "User logged in successfully",
+                    loginResponse
+            );
+
+        } catch (BadCredentialsException e) {
+
+            return ResponceApi.error(0, "Invalid email or password");
+
+        } catch (Exception e) {
+
+            return ResponceApi.error(0, e.getMessage());
+        }
     }
 
     public RequestApi<?> profile(Principal principal) {

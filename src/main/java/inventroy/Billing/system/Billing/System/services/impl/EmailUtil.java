@@ -1,6 +1,7 @@
 package inventroy.Billing.system.Billing.System.services.impl;
 
 import inventroy.Billing.system.Billing.System.dto.request.Email.PrepareEmailContent;
+import inventroy.Billing.system.Billing.System.dto.request.Email.PrepareSupplierEmailContent;
 import inventroy.Billing.system.Billing.System.entity.EmailTemplates;
 import inventroy.Billing.system.Billing.System.repository.TemplateRepository;
 import inventroy.Billing.system.Billing.System.util.Email.EmailContaint;
@@ -31,6 +32,22 @@ public class EmailUtil {
         map.put(EmailContaint.LASTNAME, prepareEmailContent.getCashierlastname());
         map.put(EmailContaint.VERIFICATION_LINK, prepareEmailContent.getVerificationLink());
 
+        String emailContent;
+        try {
+            Template customer = new Template("user", templates.getTemplate(), freemarker);
+            emailContent = FreeMarkerTemplateUtils.processTemplateIntoString(customer, map);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return emailContent;
+    }
+
+    public String generateSupplierEmail(PrepareSupplierEmailContent prepareEmailContent) {
+
+        EmailTemplates templates = templateRepository.findByTemplateName("SUPPLIER_EMAIL_LOG");
+        Map<String, Object> map = new HashMap<>();
+        map.put(EmailContaint.SUPPLIERNAME, prepareEmailContent.getSupplierName());
+        map.put(EmailContaint.REMARK, prepareEmailContent.getRemark());
         String emailContent;
         try {
             Template customer = new Template("user", templates.getTemplate(), freemarker);

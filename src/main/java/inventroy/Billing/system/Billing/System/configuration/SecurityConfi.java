@@ -13,7 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -50,7 +52,7 @@ public class SecurityConfi {
     @Bean
     public AuthenticationProvider jwtAuthenticationProvider() {
         DaoAuthenticationProvider Provider = new DaoAuthenticationProvider();
-        Provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        Provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         Provider.setUserDetailsService(userDetailService);
         return Provider;
     }
@@ -70,5 +72,6 @@ public class SecurityConfi {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder(12); }
 }
